@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import './file.css';
+import '../Components/file.css';
+import EditButton from "../Components/Buttons/EditButton";
+import DeleteButton from "../Components/Buttons/DeleteButton";
+import CompletionButton from "../Components/Buttons/CompletionButton";
 
     interface ToDoListProps {
     showForm: (taskData: any) => void; 
@@ -17,7 +20,7 @@ import './file.css';
 
   export function ToDo() {
     const [content, setContent] = useState(<ToDoList showForm={showForm} />);
-    const [selectedTask, setSelectedTask] = useState<TaskData | null>(null); 
+    const [, setSelectedTask] = useState<TaskData | null>(null); 
 
     function showList() {
         setContent(<ToDoList showForm={showForm} />);
@@ -107,19 +110,9 @@ function ToDoList(props: ToDoListProps) {
                             <td>{ToDoLis.description}</td>
                             <td>{ToDoLis.comment}</td>
                             <td style={{ width: "10px", whiteSpace: "nowrap" }}>
-                                <button onClick={() => editTask(ToDoLis)} type="button" className="btn btn-primary btn-sm me-2">
-                                    Edit Task
-                                </button>
-                                <button onClick={() => deleteTask(ToDoLis.id)} type="button" className="btn btn-danger btn-sm me-2">
-                                    Delete Task
-                                </button>
-                                <button
-                                    onClick={() => toggleCompletion(ToDoLis.id)}
-                                    type="button"
-                                    className={`btn btn-success btn-sm me-2 ${completedTasks.includes(ToDoLis.id) ? 'completed' : ''}`}
-                                >
-                                    Mark as Completed
-                                </button>
+                                <EditButton onClick={() => editTask(ToDoLis)} />
+                                <DeleteButton onClick={() => deleteTask(ToDoLis.id)} />
+                                <CompletionButton onClick={() => toggleCompletion(ToDoLis.id)} completed={completedTasks.includes(ToDoLis.id)} />
                             </td>
                         </tr>
                     ))}
@@ -181,7 +174,7 @@ function TaskForm(props: TaskFormProps & { task?: any }) {
             <div className="row">
                 <div className="col-lg-6 mx-auto">
                     {errorMessage && (
-                        <div className="alert alert-danger" role="alert">
+                        <div className="alert alert-info" role="alert">
                             {errorMessage}
                         </div>
                     )}

@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Navbar, Footer } from './Pages/layout';
 import { Home } from './Pages/home';
 import { ToDo } from './Pages/ToDo';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Navbar } from './Components/Navbar';
+import { Footer } from './Components/Footer';
 
 function App(){
   return(
