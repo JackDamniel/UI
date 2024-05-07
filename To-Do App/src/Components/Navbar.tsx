@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import './file.css';
+import '../index.css';
 
 export function Navbar() {
   return (

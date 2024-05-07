@@ -1,15 +1,13 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
 import React, { useEffect, useState } from "react";
-import '../Components/file.css';
-import EditButton from "../Components/Buttons/EditButton";
-import DeleteButton from "../Components/Buttons/DeleteButton";
-import CompletionButton from "../Components/Buttons/CompletionButton";
+import '../index.css';
+import Button from '../Components/Buttons/Button';
 import { useQueryClient } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 
 interface ToDoListProps {
-  showForm: (taskData: TaskData) => void; // Update type to TaskData
+  showForm: (taskData: TaskData) => void; 
 }
 
 interface TaskFormProps {
@@ -53,85 +51,84 @@ function ToDo() {
 
 function ToDoList(props: ToDoListProps) {
     const { data: ToDo, isLoading, isError } = useQuery<TaskData[], Error>({
-        queryKey: ['todos'], 
-        queryFn: () =>
-          fetch("http://localhost:3004/ToDo")
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Unexpected error Response");
-              }
-              return response.json();
-            })
-      });
-      const [completedTasks, setCompletedTasks] = useState<number[]>([]);
-
-  function toggleCompletion(taskId: number) {
-    const updatedCompletedTasks = completedTasks.includes(taskId)
+      queryKey: ['todos'],
+      queryFn: () =>
+        fetch("http://localhost:3004/ToDo")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Unexpected error Response");
+            }
+            return response.json();
+          })
+    });
+    const [completedTasks, setCompletedTasks] = useState<number[]>([]);
+  
+    function toggleCompletion(taskId: number) {
+      const updatedCompletedTasks = completedTasks.includes(taskId)
         ? completedTasks.filter((id) => id !== taskId)
         : [...completedTasks, taskId];
-    setCompletedTasks(updatedCompletedTasks);
-  }
-
- 
-  const queryClient = useQueryClient(); 
-
-  function deleteTask(taskId: number) {
-    fetch(`http://localhost:3004/ToDo/${taskId}`, {
-        method: "DELETE",
-    })
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error("Failed to delete task");
-        }
-        return response.json();
-    })
-    .then(() => {
-        // Refresh the task list after deletion
-        queryClient.invalidateQueries('todos');
-    })
-    .catch((error) => console.error("Error deleting task:", error));
-  }
-
-  function editTask(task: TaskData) {
-    props.showForm(task);
-  }
-
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error fetching data</div>;
-  if (!ToDo) return <div>No tasks found</div>;
+      setCompletedTasks(updatedCompletedTasks);
+    }
   
-  return (
-    <>
-      <h2 className="text-center mb-3">List of Tasks</h2>
-      <button onClick={() => props.showForm({ id: 0, taskName: '', description: '', comment: '' })} type="button" className="btn btn-primary me-2">Create</button>
-
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Task Name</th>
-            <th>Description</th>
-            <th>Comment</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ToDo.map((ToDoLis, index) => (
-            <tr key={index}>
-              <td>{ToDoLis.taskName}</td>
-              <td>{ToDoLis.description}</td>
-              <td>{ToDoLis.comment}</td>
-              <td style={{ width: "10px", whiteSpace: "nowrap" }}>
-                <EditButton onClick={() => editTask(ToDoLis)} />
-                <DeleteButton onClick={() => deleteTask(ToDoLis.id)} />
-                <CompletionButton onClick={() => toggleCompletion(ToDoLis.id)} completed={completedTasks.includes(ToDoLis.id)} />
-              </td>
+    const queryClient = useQueryClient();
+  
+    function deleteTask(taskId: number) {
+      fetch(`http://localhost:3004/ToDo/${taskId}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to delete task");
+          }
+          return response.json();
+        })
+        .then(() => {
+          // Refresh the task list after deletion
+          queryClient.invalidateQueries({ queryKey: ['todos'] });
+        })
+        .catch((error) => console.error("Error deleting task:", error));
+    }
+  
+    function editTask(task: TaskData) {
+      props.showForm(task);
+    }
+  
+    if (isLoading) return <div>Loading...</div>;
+    if (isError) return <div>Error fetching data</div>;
+    if (!ToDo) return <div>No tasks found</div>;
+  
+    return (
+      <>
+        <h2 className="text-center mb-3">List of Tasks</h2>
+        <button onClick={() => props.showForm({ id: 0, taskName: '', description: '', comment: '' })} type="button" className="btn btn-primary me-2">Create</button>
+  
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Task Name</th>
+              <th>Description</th>
+              <th>Comment</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
-  );
-}
+          </thead>
+          <tbody>
+            {ToDo.map((ToDoLis, index) => (
+              <tr key={index}>
+                <td>{ToDoLis.taskName}</td>
+                <td>{ToDoLis.description}</td>
+                <td>{ToDoLis.comment}</td>
+                <td style={{ width: "10px", whiteSpace: "nowrap" }}>
+                  <Button type="edit" onClick={() => editTask(ToDoLis)} />
+                  <Button type="delete" onClick={() => deleteTask(ToDoLis.id)} />
+                  <Button type="completion" onClick={() => toggleCompletion(ToDoLis.id)} completed={completedTasks.includes(ToDoLis.id)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </>
+    );
+  }
 
 function TaskForm(props: TaskFormProps & { task?: TaskData }) {
   const [taskData, setTaskData] = useState<TaskData>(props.task || { id: 0, taskName: '', description: '', comment: '' });
