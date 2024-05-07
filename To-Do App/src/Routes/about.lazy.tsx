@@ -1,13 +1,13 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createLazyFileRoute } from "@tanstack/react-router";
 import React, { useEffect, useState } from "react";
-import '../index.css';
-import Button from '../Components/Buttons/Button';
-import { useQueryClient } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
-
+import "../index.css";
+import Button from "../Components/Buttons/Button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 interface ToDoListProps {
-  showForm: (taskData: TaskData) => void; 
+  showForm: (taskData: TaskData) => void;
 }
 
 interface TaskFormProps {
@@ -21,10 +21,10 @@ interface TaskData {
   comment: string;
 }
 export type Error = {
-    message: string;
-}
+  message: string;
+};
 
-export const Route = createLazyFileRoute('/ToDo')({
+export const Route = createLazyFileRoute("/about")({
   component: ToDo,
 });
 
@@ -42,136 +42,164 @@ function ToDo() {
     setSelectedTask(taskData);
   }
 
-  return (
-    <div className="container my-5">
-      {content}
-    </div>
-  );
+  return <div className="container my-5">{content}</div>;
 }
 
 function ToDoList(props: ToDoListProps) {
-    const { data: ToDo, isLoading, isError } = useQuery<TaskData[], Error>({
-      queryKey: ['todos'],
-      queryFn: () =>
-        fetch("http://localhost:3004/ToDo")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Unexpected error Response");
-            }
-            return response.json();
-          })
-    });
-    const [completedTasks, setCompletedTasks] = useState<number[]>([]);
-  
-    function toggleCompletion(taskId: number) {
-      const updatedCompletedTasks = completedTasks.includes(taskId)
-        ? completedTasks.filter((id) => id !== taskId)
-        : [...completedTasks, taskId];
-      setCompletedTasks(updatedCompletedTasks);
-    }
-  
+  const {
+    data: ToDo,
+    isLoading,
+    isError,
+  } = useQuery<TaskData[], Error>({
+    queryKey: ["todos"],
+    queryFn: () =>
+      axios
+        .get<TaskData[]>("http://localhost:3004/ToDo")
+        .then((response) => response.data)
+        .catch(() => {
+          throw new Error("Unexpected error Response");
+        }),
+  });
+  function useDeleteTaskMutation() {
     const queryClient = useQueryClient();
-  
-    function deleteTask(taskId: number) {
-      fetch(`http://localhost:3004/ToDo/${taskId}`, {
-        method: "DELETE",
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to delete task");
-          }
-          return response.json();
-        })
-        .then(() => {
-          // Refresh the task list after deletion
-          queryClient.invalidateQueries({ queryKey: ['todos'] });
-        })
-        .catch((error) => console.error("Error deleting task:", error));
-    }
-  
-    function editTask(task: TaskData) {
-      props.showForm(task);
-    }
-  
-    if (isLoading) return <div>Loading...</div>;
-    if (isError) return <div>Error fetching data</div>;
-    if (!ToDo) return <div>No tasks found</div>;
-  
-    return (
-      <>
-        <h2 className="text-center mb-3">List of Tasks</h2>
-        <button onClick={() => props.showForm({ id: 0, taskName: '', description: '', comment: '' })} type="button" className="btn btn-primary me-2">Create</button>
-  
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Task Name</th>
-              <th>Description</th>
-              <th>Comment</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ToDo.map((ToDoLis, index) => (
-              <tr key={index}>
-                <td>{ToDoLis.taskName}</td>
-                <td>{ToDoLis.description}</td>
-                <td>{ToDoLis.comment}</td>
-                <td style={{ width: "10px", whiteSpace: "nowrap" }}>
-                  <Button type="edit" onClick={() => editTask(ToDoLis)} />
-                  <Button type="delete" onClick={() => deleteTask(ToDoLis.id)} />
-                  <Button type="completion" onClick={() => toggleCompletion(ToDoLis.id)} completed={completedTasks.includes(ToDoLis.id)} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </>
-    );
+
+    return useMutation<void, Error, number>({
+      mutationFn: async (taskId: number) => {
+        await axios.delete(`http://localhost:3004/ToDo/${taskId}`);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["todos"] });
+      },
+    });
   }
 
+  const [completedTasks, setCompletedTasks] = useState<number[]>([]);
+  const deleteTaskMutation = useDeleteTaskMutation();
+
+  function toggleCompletion(taskId: number) {
+    const updatedCompletedTasks = completedTasks.includes(taskId)
+      ? completedTasks.filter((id) => id !== taskId)
+      : [...completedTasks, taskId];
+    setCompletedTasks(updatedCompletedTasks);
+  }
+
+  function deleteTask(taskId: number) {
+    deleteTaskMutation.mutate(taskId);
+  }
+
+  function editTask(task: TaskData) {
+    props.showForm(task);
+  }
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error fetching data</div>;
+  if (!ToDo) return <div>No tasks found</div>;
+
+  return (
+    <>
+      <h2 className="text-center mb-3">List of Tasks</h2>
+      <button
+        onClick={() =>
+          props.showForm({ id: 0, taskName: "", description: "", comment: "" })
+        }
+        type="button"
+        className="btn btn-primary me-2"
+      >
+        Create
+      </button>
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Task Name</th>
+            <th>Description</th>
+            <th>Comment</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ToDo.map((ToDoLis, index) => (
+            <tr key={index}>
+              <td>{ToDoLis.taskName}</td>
+              <td>{ToDoLis.description}</td>
+              <td>{ToDoLis.comment}</td>
+              <td style={{ width: "10px", whiteSpace: "nowrap" }}>
+                <Button type="edit" onClick={() => editTask(ToDoLis)} />
+                <Button type="delete" onClick={() => deleteTask(ToDoLis.id)} />
+                <Button
+                  type="completion"
+                  onClick={() => toggleCompletion(ToDoLis.id)}
+                  completed={completedTasks.includes(ToDoLis.id)}
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  );
+}
+
 function TaskForm(props: TaskFormProps & { task?: TaskData }) {
-  const [taskData, setTaskData] = useState<TaskData>(props.task || { id: 0, taskName: '', description: '', comment: '' });
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [taskData, setTaskData] = useState<TaskData>(
+    props.task || { id: 0, taskName: '', description: '', comment: '' }
+  );
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
     setTaskData(props.task || { id: 0, taskName: '', description: '', comment: '' });
   }, [props.task]);
 
+  const mutationOptions = {
+    mutationFn: async (taskData: TaskData) => {
+      const url = taskData.id
+        ? `http://localhost:3004/ToDo/${taskData.id}`
+        : 'http://localhost:3004/ToDo';
+      const method = taskData.id ? 'PUT' : 'POST';
+    
+      const response = await axios({
+        method: method,
+        url: url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: taskData,
+      });
+    
+      if (!response.data) {
+        throw new Error('No data received from server');
+      }
+    },
+    onSuccess: () => {
+      props.showList();
+    },
+    onError: (error: Error) => {
+      console.error('Error', error);
+      setErrorMessage('Error submitting the form. Please try again later.');
+    },
+  };
+  
+  const mutation = useMutation<void, Error, TaskData>(mutationOptions);
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
+  
     const formData = new FormData(event.currentTarget);
-    const product = Object.fromEntries(formData.entries());
-
-    if (!product.taskName || !product.description) {
-      setErrorMessage("Please provide all the required fields!");
+    const updatedTaskData = Object.fromEntries(formData.entries());
+  
+    if (!updatedTaskData.taskName || !updatedTaskData.description) {
+      setErrorMessage('Please provide all the required fields!');
       return;
-    } else {
-      setErrorMessage(""); // Clear error message if fields are provided
     }
-
-    const url = taskData.id ? `http://localhost:3004/ToDo/${taskData.id}` : "http://localhost:3004/ToDo";
-    const method = taskData.id ? "PUT" : "POST";
-
-    fetch(url, {
-      method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(product),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not OK");
-        }
-        return response.json();
-      })
-      .then(() => props.showList())
-      .catch((error) => {
-        console.error("Error", error);
-        setErrorMessage("Error submitting the form. Please try again later.");
-      });
+    
+    const updatedData = { ...taskData, ...updatedTaskData };
+  
+    if (taskData.id) {
+     
+      mutation.mutate(updatedData); 
+    } else {
+  
+      mutation.mutate(updatedTaskData as unknown as TaskData); 
+    }
   }
 
   return (
