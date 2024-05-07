@@ -60,6 +60,16 @@ function ToDoList(props: ToDoListProps) {
           throw new Error("Unexpected error Response");
         }),
   });
+
+  // Load completed tasks from local storage or initialize an empty array
+  const initialCompletedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+  const [completedTasks, setCompletedTasks] = useState<number[]>(initialCompletedTasks);
+
+  useEffect(() => {
+    // Save completed tasks to local storage whenever it changes
+    localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+  }, [completedTasks]);
+
   function useDeleteTaskMutation() {
     const queryClient = useQueryClient();
 
@@ -73,13 +83,13 @@ function ToDoList(props: ToDoListProps) {
     });
   }
 
-  const [completedTasks, setCompletedTasks] = useState<number[]>([]);
   const deleteTaskMutation = useDeleteTaskMutation();
 
   function toggleCompletion(taskId: number) {
     const updatedCompletedTasks = completedTasks.includes(taskId)
       ? completedTasks.filter((id) => id !== taskId)
       : [...completedTasks, taskId];
+
     setCompletedTasks(updatedCompletedTasks);
   }
 
@@ -194,10 +204,8 @@ function TaskForm(props: TaskFormProps & { task?: TaskData }) {
     const updatedData = { ...taskData, ...updatedTaskData };
   
     if (taskData.id) {
-     
       mutation.mutate(updatedData); 
     } else {
-  
       mutation.mutate(updatedTaskData as unknown as TaskData); 
     }
   }
