@@ -12,26 +12,26 @@ import { createFileRoute } from '@tanstack/react-router'
 
 // Import Routes
 
-import { Route as rootRoute } from './Routes/__root'
-import { Route as RouteTreeImport } from './Routes/routeTree'
-import { Route as ToDoRoute } from './Routes/about.lazy';
+import { Route as rootRoute } from './routes/__root'
+import { Route as RouteTreeImport } from './routes/routeTree'
 
 // Create Virtual Routes
 
-const AboutLazyImport = createFileRoute('/about')()
+const TodoLazyImport = createFileRoute('/todo')()
+const RickLazyImport = createFileRoute('/rick')()
 const IndexLazyImport = createFileRoute('/')()
-const ToDoLazyImport = createFileRoute('/ToDo')();
 
 // Create/Update Routes
-const ToDoLazyRoute = ToDoLazyImport.update({
-  path: '/ToDo',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./Routes/about.lazy').then((d) => d.Route));
 
-const AboutLazyRoute = AboutLazyImport.update({
-  path: '/about',
+const TodoLazyRoute = TodoLazyImport.update({
+  path: '/todo',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./Routes/about.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/todo.lazy').then((d) => d.Route))
+
+const RickLazyRoute = RickLazyImport.update({
+  path: '/rick',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/rick.lazy').then((d) => d.Route))
 
 const RouteTreeRoute = RouteTreeImport.update({
   path: '/routeTree',
@@ -41,7 +41,7 @@ const RouteTreeRoute = RouteTreeImport.update({
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./Routes/index.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -55,14 +55,14 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RouteTreeImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      preLoaderRoute: typeof AboutLazyImport
+    '/rick': {
+      preLoaderRoute: typeof RickLazyImport
       parentRoute: typeof rootRoute
     }
-    '/ToDo': {
-      preLoaderRoute: typeof ToDoLazyImport;
-      parentRoute: typeof rootRoute;
-    };
+    '/todo': {
+      preLoaderRoute: typeof TodoLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -71,8 +71,8 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   IndexLazyRoute,
   RouteTreeRoute,
-  AboutLazyRoute,
-  ToDoLazyRoute,
+  RickLazyRoute,
+  TodoLazyRoute,
 ])
 
 /* prettier-ignore-end */

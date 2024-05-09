@@ -8,7 +8,7 @@ export const Route = createLazyFileRoute('/')({
 export function Home() {
   return (
     <div className="container my-5">
-      <h2 className="text-center mb-3">Welcome To The Place Of Miracles</h2>
+      <h2 className="text-center mb-3">Hello World</h2>
       <div className="text-center">
         <img src={teslaImage} alt="Tesla" />
       </div>

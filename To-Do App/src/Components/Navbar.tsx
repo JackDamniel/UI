@@ -17,6 +17,9 @@ export function Navbar() {
                       <li className="nav-item">
                           <Link className="nav-link text-white" to="/ToDo">ToDo</Link>
                       </li>
+                      <li className="nav-item">
+                            <Link className="nav-link text-white" to="/Rick">Rick</Link>
+                        </li>
                   </ul>
               </div>
           </div>

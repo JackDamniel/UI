@@ -19,7 +19,7 @@ html, body {
 footer {
     margin-top: auto;
     width: 100%;
-    background-color: #343a40; /* Adjust the background color as needed */
+    background-color: #343a40;
     color: white;
     text-align: center;
     padding: 2px 0;
@@ -27,3 +27,25 @@ footer {
     bottom: 0;
     left: 0;
 }
+
+.character-card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; 
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .character-card:hover {
+    transform: scale(1.05); 
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); 
+  }
+
+  .character-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .character-card {
+    flex: 0 0 calc(15.33% - 10px); 
+    margin-bottom: 20px; 
+    box-sizing: border-box;
+  }

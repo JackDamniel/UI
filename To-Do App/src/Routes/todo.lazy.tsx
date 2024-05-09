@@ -24,7 +24,7 @@ export type Error = {
   message: string;
 };
 
-export const Route = createLazyFileRoute("/about")({
+export const Route = createLazyFileRoute("/todo")({
   component: ToDo,
 });
 
@@ -61,12 +61,11 @@ function ToDoList(props: ToDoListProps) {
         }),
   });
 
-  // Load completed tasks from local storage or initialize an empty array
   const initialCompletedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
   const [completedTasks, setCompletedTasks] = useState<number[]>(initialCompletedTasks);
 
   useEffect(() => {
-    // Save completed tasks to local storage whenever it changes
+   
     localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
   }, [completedTasks]);
 
