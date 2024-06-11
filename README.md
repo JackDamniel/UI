@@ -25,7 +25,7 @@ The project contains a working **To-Do** application with multiple functionaliti
 
 ![ToDo app giff](https://github.com/JackDamniel/UI/assets/98555418/a216d843-3274-4060-b328-8d893c8808dd)
 
-## Key Features
+## Key Features 📜
 
 1. **Functional To-Do Application:**
    - Ability to create new tasks
@@ -88,9 +88,9 @@ Before running the application, ensure you have the following installed:
 
 ## Open Two Terminal Windows
 
-1. **Open a terminal window:**
+1. **Open a terminal window:** 1️⃣
    - Use the shortcut `Ctrl + \` (backtick) or go to `Terminal > New Terminal`.
-2. **Open a second terminal window:**
+2. **Open a second terminal window:** 2️⃣
    - Click the `+` icon in the terminal panel or use the shortcut `Ctrl + Shift + \` (backtick).
 
 ## Run the Local Server (localhost:3004)
@@ -114,12 +114,12 @@ Before running the application, ensure you have the following installed:
 
 ## Verifying the Application
 
-### Check the Local Server
+### Check the Local Server ✔️
 
 1. **Open your web browser** and navigate to [http://localhost:3004](http://localhost:3004).
 2. **Ensure that the server is running without any errors.**
 
-### Check the Development Server
+### Check the Development Server ✔️
 
 1. **Open another tab** in your web browser and navigate to [http://localhost:5173](http://localhost:5173).
 2. **Verify that your application is running and accessible.**
