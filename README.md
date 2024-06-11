@@ -1,6 +1,6 @@
 # **To-Do App**
 
-## **Description**
+## **Description** 📝
 This project is a React-based web application that leverages the Tanstack Router for routing and integrates with the Rick and Morty API to fetch and display characters, locations, and episodes from the show.
 
 It includes multiple pages such as Home, ToDo, and a dedicated page for Rick API.
@@ -14,7 +14,7 @@ The project contains a working **To-Do** application with multiple functionaliti
   - Delete
   - Mark Complete
 
-## **Project Objectives**
+## **Project Objectives** 📌
 
 - Create a functional To-Do Application
 - Use Axios to make calls to the local server
@@ -52,8 +52,11 @@ The project contains a working **To-Do** application with multiple functionaliti
 6. **User Interface Features:**
    - Eye-catching design with a responsive layout
    - Well-organized UI elements for easy navigation and interaction
+  
+![Rick Morty GIF](https://github.com/JackDamniel/UI/assets/98555418/49375d72-e289-41e1-a908-4967a725a4e3)
 
-  ## How to run the Application
+
+  ## How to run the Application 💻
   ## Prerequisites
 
 Before running the application, ensure you have the following installed:
@@ -121,12 +124,12 @@ Before running the application, ensure you have the following installed:
 1. **Open another tab** in your web browser and navigate to [http://localhost:5173](http://localhost:5173).
 2. **Verify that your application is running and accessible.**
 
-  ## Technologies Used
+  ## Technologies Used 💡
 - **Frontend:**
   - React.js
   - TypeScript
-  - HTML5
-  - CSS3 (with Bootstrap for styling)
+  - HTML
+  - CSS (with Bootstrap for styling)
   - React Query
     
 - **Backend:**
